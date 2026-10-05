@@ -8,9 +8,7 @@ import com.zzsd.inolibi.service.IChartService;
 import org.springframework.stereotype.Service;
 
 /**
- * <p>
  * 图表信息表 服务实现类
- * </p>
  *
  * @author inoli
  * @since 2026-10-05
