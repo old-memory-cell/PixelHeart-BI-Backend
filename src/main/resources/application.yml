@@ -21,9 +21,9 @@ springdoc:
   group-configs:
     - group: 'default'
       paths-to-match: '/**'
-      packages-to-scan: com.zzsd.inolibi.controller # swagger ?????
+      packages-to-scan: com.zzsd.inolibi.controller # swagger 扫描包文档
 
 knife4j:
-  enable: true # ????Knife4j
+  enable: true # 增强Knife4j
   setting:
-    language: zh_cn # ???????
+    language: zh_cn # 中文
