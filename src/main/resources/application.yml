@@ -1,0 +1,29 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+
+spring:
+  application:
+    name: inoli-bi
+
+  # mysql ???
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/${db.db_name}?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${db.username}
+    password: ${db.password}
+
+
+# swagger
+springdoc:
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.zzsd.inolibi.controller # swagger ?????
+
+knife4j:
+  enable: true # ????Knife4j
+  setting:
+    language: zh_cn # ???????
