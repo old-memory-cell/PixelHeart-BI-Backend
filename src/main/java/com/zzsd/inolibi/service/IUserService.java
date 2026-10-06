@@ -1,7 +1,11 @@
 package com.zzsd.inolibi.service;
 
 import com.baomidou.mybatisplus.spring.service.IService;
-import com.zzsd.inolibi.entity.User;
+import com.zzsd.inolibi.common.Result;
+import com.zzsd.inolibi.entity.user.User;
+import com.zzsd.inolibi.entity.user.dto.UserLoginDto;
+import com.zzsd.inolibi.entity.user.dto.UserRegisterDto;
+import com.zzsd.inolibi.entity.user.vo.LoginInfo;
 
 
 /**
@@ -12,4 +16,19 @@ import com.zzsd.inolibi.entity.User;
  */
 public interface IUserService extends IService<User> {
 
+    /**
+     * 用户注册
+     *
+     * @param userRegisterDto 注册实体
+     * @return 用户id
+     */
+    Result<Object> register(UserRegisterDto userRegisterDto);
+
+    /**
+     * 用户登录
+     *
+     * @param userLoginDto 登录实体
+     * @return 登录信息
+     */
+    LoginInfo login(UserLoginDto userLoginDto);
 }

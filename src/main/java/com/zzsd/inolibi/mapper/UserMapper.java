@@ -1,6 +1,6 @@
 package com.zzsd.inolibi.mapper;
 
-import com.zzsd.inolibi.entity.User;
+import com.zzsd.inolibi.entity.user.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

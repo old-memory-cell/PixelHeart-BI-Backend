@@ -2,15 +2,15 @@ package com.zzsd.inolibi.controller;
 
 
 import com.zzsd.inolibi.common.Result;
-import com.zzsd.inolibi.entity.User;
+import com.zzsd.inolibi.entity.user.User;
+import com.zzsd.inolibi.entity.user.dto.UserLoginDto;
+import com.zzsd.inolibi.entity.user.dto.UserRegisterDto;
+import com.zzsd.inolibi.entity.user.vo.LoginInfo;
 import com.zzsd.inolibi.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,5 +34,33 @@ public class UserController {
         List<User> list = userService.list();
         return Result.success(list);
     }
+
+
+    /**
+     * 用户注册接口
+     *
+     * @param userRegisterDto 用户注册实体
+     * @return 用户id
+     */
+    @PostMapping("/register")
+    @Operation(summary = "用户注册")
+    public Result<Object> register(@RequestBody UserRegisterDto userRegisterDto) {
+        return userService.register(userRegisterDto);
+    }
+
+
+    /*
+     * 登录功能
+     * */
+    @PostMapping("/login")
+    @Operation(summary = "用户登录")
+    public Result login(@RequestBody UserLoginDto userLoginDto) {
+        LoginInfo loginInfo = userService.login(userLoginDto);
+        if (loginInfo != null) {
+            return Result.success(loginInfo);
+        }
+        return Result.error("用户名或密码错误");
+    }
+
 
 }
