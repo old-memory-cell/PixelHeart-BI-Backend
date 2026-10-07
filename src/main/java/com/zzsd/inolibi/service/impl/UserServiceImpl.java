@@ -1,5 +1,6 @@
 package com.zzsd.inolibi.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.crypto.digest.BCrypt;
@@ -9,15 +10,23 @@ import com.zzsd.inolibi.common.Result;
 import com.zzsd.inolibi.entity.user.User;
 import com.zzsd.inolibi.entity.user.dto.UserLoginDto;
 import com.zzsd.inolibi.entity.user.dto.UserRegisterDto;
+import com.zzsd.inolibi.entity.user.vo.CurrentUserVo;
 import com.zzsd.inolibi.entity.user.vo.LoginInfo;
 import com.zzsd.inolibi.mapper.UserMapper;
 import com.zzsd.inolibi.service.IUserService;
 
 import com.zzsd.inolibi.utils.JwtUtils;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 用户 服务实现类
@@ -26,7 +35,11 @@ import java.util.Map;
  * @since 2026-10-05
  */
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
+
+
+    public final StringRedisTemplate stringRedisTemplate;
 
     /**
      * 用户注册逻辑
@@ -120,4 +133,52 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
         return new LoginInfo(user.getId(), user.getUserAccount(), token);
     }
+
+    /**
+     * 根据id获取当前登录用户信息
+     *
+     * @param userId 用户id
+     * @return 当前用户信息（不含密码等敏感字段）
+     */
+    @Override
+    public CurrentUserVo getCurrentUser(Long userId) {
+        if (userId == null) {
+            throw new RuntimeException("用户未登录");
+        }
+
+        User user = getById(userId);
+        if (user == null) {
+            throw new RuntimeException("用户不存在");
+        }
+
+        // 拷贝属性，忽略密码、逻辑删除等敏感/无用字段
+        CurrentUserVo currentUserVo = new CurrentUserVo();
+        BeanUtil.copyProperties(user, currentUserVo, "userPassword", "updateTime", "isDelete");
+        return currentUserVo;
+    }
+
+    /**
+     * 用户退出登录状态
+     * @param request 请求
+     */
+    @Override
+    public void logout(HttpServletRequest request) throws Exception {
+        // 1. 从 header 中获取 token（注意：名字必须和拦截器里一致，叫 "token"）
+        String token = request.getHeader("token");
+
+        if (token != null && !token.isEmpty()) {
+            // 2. 获取 token 的过期时间
+            Claims claims = JwtUtils.parseJWT(token);
+            Date expiration = claims.getExpiration();
+
+            // 3. 计算剩余有效时间
+            long ttl = expiration.getTime() - System.currentTimeMillis();
+
+            // 4. 存入 Redis 黑名单（设置与 token 相同的过期时间）
+            if (ttl > 0) {
+                stringRedisTemplate.opsForValue().set("jwt:blacklist:" + token, "logout", ttl, TimeUnit.MILLISECONDS);
+            }
+        }
+    }
+
 }

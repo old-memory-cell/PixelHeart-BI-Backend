@@ -58,12 +58,25 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- knife4j -->
+        <!-- knife4j（Spring Boot 4.x 适配版，knife4j-next；groupId 由 com.github.xiaoymin 迁移为 com.baizhukui） -->
         <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-            <version>4.4.0</version>
+            <groupId>com.baizhukui</groupId>
+            <artifactId>knife4j-openapi3-boot4-spring-boot-starter</artifactId>
+            <version>5.7.6</version>
         </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.github.xiaoymin</groupId>-->
+<!--            <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>-->
+<!--            <version>4.4.0</version>-->
+<!--        </dependency>-->
+
+        <!-- 移除旧依赖后，替换为 jakarta 版本 -->
+<!--        <dependency>-->
+<!--            <groupId>com.github.xiaoymin</groupId>-->
+<!--            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>-->
+<!--            <version>4.5.0</version>-->
+<!--        </dependency>-->
 
         <!-- mybatis-plus -->
         <dependency>
@@ -103,6 +116,12 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>0.12.6</version>
             <scope>runtime</scope>
+        </dependency>
+
+        <!-- redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
     </dependencies>
 
