@@ -1,7 +1,7 @@
 package com.zzsd.inolibi.service;
 
 import com.baomidou.mybatisplus.spring.service.IService;
-import com.zzsd.inolibi.entity.Chart;
+import com.zzsd.inolibi.entity.chart.Chart;
 
 
 /**

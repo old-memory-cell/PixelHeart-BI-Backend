@@ -1,4 +1,4 @@
-package com.zzsd.inolibi.entity;
+package com.zzsd.inolibi.entity.chart;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -47,6 +47,13 @@ public class Chart implements Serializable {
     @Schema(description = "图表类型")
     @TableField("chart_type")
     private String chartType;
+
+    /**
+     * 图表名称
+     */
+    @Schema(description = "图表名称")
+    @TableField("chart_name")
+    private String chartName;
 
     /**
      * 分析目标

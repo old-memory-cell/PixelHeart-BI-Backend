@@ -1,7 +1,7 @@
 package com.zzsd.inolibi.service.impl;
 
 import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
-import com.zzsd.inolibi.entity.Chart;
+import com.zzsd.inolibi.entity.chart.Chart;
 import com.zzsd.inolibi.mapper.ChartMapper;
 import com.zzsd.inolibi.service.IChartService;
 
