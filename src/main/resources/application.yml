@@ -23,6 +23,14 @@ spring:
       host: localhost
       port: 6379
 
+  # ai 的相关配置
+  ai:
+    openai:
+      api-key: ${DEEPSEEK_API_KEY} # deepseek api key
+      base-url: https://api.deepseek.com # deepseek api base url
+      chat:
+        model: deepseek-flash # 模型名称
+
 # swagger
 springdoc:
   group-configs:
