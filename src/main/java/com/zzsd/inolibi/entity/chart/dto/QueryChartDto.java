@@ -8,7 +8,8 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * ai生成图表dto
+ * 查询图表dto
+ * 有点多余
  */
 @Data
 @Schema(name = "ChartByAIDto", description = "ai生成图表dto")
