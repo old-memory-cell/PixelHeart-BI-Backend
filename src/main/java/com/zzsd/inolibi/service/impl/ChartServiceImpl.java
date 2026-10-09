@@ -7,8 +7,10 @@ import com.zzsd.inolibi.entity.chart.dto.ChartByAIDto;
 import com.zzsd.inolibi.mapper.ChartMapper;
 import com.zzsd.inolibi.service.IAIService;
 import com.zzsd.inolibi.service.IChartService;
+import com.zzsd.inolibi.utils.AnalysisResult;
 import com.zzsd.inolibi.utils.CurrentHolder;
 import com.zzsd.inolibi.utils.ExcelUtils;
+import com.zzsd.inolibi.utils.LlmResponseParser;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,7 +30,8 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
 
     /**
      * 根据ai分析得到图表数据
-     * @param chartByAIDto 生成图表dto
+     *
+     * @param chartByAIDto  生成图表dto
      * @param multipartFile 上传的文件
      * @return ai分析结果
      */
@@ -44,22 +47,26 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
         String conversationId = UUID.randomUUID() + "-" + userId;
         // 构建问题
         String question = """
-        分析目标:%s
-        图表类型:%s
-        图表名称:%s
-        文件数据:%s
-        """.formatted(chartType, chartName, goal, csvStr);
+                分析目标:%s
+                图表类型:%s
+                图表名称:%s
+                文件数据:%s
+                """.formatted(chartType, chartName, goal, csvStr);
         // 调用大模型
         String modelResponse = aiService.getAIAnswer(question, conversationId);
+
+        AnalysisResult result = LlmResponseParser.parse(modelResponse);
+        // 分析结论
+        String conclusion = result.conclusion();
+        // echarts代码
+        String echartsCode = result.echartsCode();
         // 3. 保存文档内容到mysql
-        Chart chart = new Chart();
-        chart.setChartType(chartType);
-        chart.setChartName(chartName);
-        chart.setGoal(goal);
-        chart.setChartData(csvStr);
-        chart.setGenChart(modelResponse);
-        chart.setGenResult(modelResponse);
-        chart.setUserId(userId);
+        Chart chart = Chart.builder()
+                .chartType(chartType).chartName(chartName).goal(goal)
+                .chartData(csvStr) // 原始数据
+                .genChart(echartsCode) // echarts代码
+                .genResult(conclusion) // 分析结论
+                .userId(userId).build();
         this.save(chart);
         // 3. 返回结果
         return modelResponse;

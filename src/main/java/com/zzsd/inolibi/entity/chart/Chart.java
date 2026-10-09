@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -24,6 +25,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @TableName("chart")
 @Schema(name = "Chart", description = "图表信息表")
+@Builder
 @JsonPropertyOrder({
         "id", "chartType", "goal", "chartData",
         "genChart", "genResult", "userId",
