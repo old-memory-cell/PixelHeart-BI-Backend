@@ -7,12 +7,9 @@ import com.zzsd.inolibi.entity.chart.dto.ChartByAIDto;
 import com.zzsd.inolibi.mapper.ChartMapper;
 import com.zzsd.inolibi.service.IAIService;
 import com.zzsd.inolibi.service.IChartService;
-
 import com.zzsd.inolibi.utils.CurrentHolder;
 import com.zzsd.inolibi.utils.ExcelUtils;
 import jakarta.annotation.Resource;
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

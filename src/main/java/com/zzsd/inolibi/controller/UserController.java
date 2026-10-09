@@ -31,6 +31,11 @@ public class UserController {
     @Resource
     private IUserService userService;
 
+    /**
+     * 获取用户列表
+     *
+     * @return 用户列表
+     */
     @GetMapping("/list")
     @Operation(summary = "用户列表")
     public Result<List<User>> list() {
@@ -52,9 +57,12 @@ public class UserController {
     }
 
 
-    /*
-     * 登录功能
-     * */
+    /**
+     * 用户登录接口
+     *
+     * @param userLoginDto 用户登录实体
+     * @return 登录信息
+     */
     @PostMapping("/login")
     @Operation(summary = "用户登录")
     public Result login(@RequestBody UserLoginDto userLoginDto) {
@@ -82,7 +90,7 @@ public class UserController {
 
     /**
      * 用户退出登录状态
-     * @return
+     * @return 退出登录
      */
     @PostMapping("/logout")
     @Operation(summary = "退出登录")

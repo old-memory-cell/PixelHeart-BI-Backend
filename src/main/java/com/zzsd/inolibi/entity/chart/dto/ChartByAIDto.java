@@ -1,6 +1,5 @@
 package com.zzsd.inolibi.entity.chart.dto;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

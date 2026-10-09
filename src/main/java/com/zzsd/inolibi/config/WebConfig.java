@@ -1,7 +1,6 @@
 package com.zzsd.inolibi.config;
 
 import com.zzsd.inolibi.interceptor.TokenIntercepter;
-import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

@@ -4,14 +4,14 @@ package com.zzsd.inolibi.controller;
 import com.zzsd.inolibi.common.Result;
 import com.zzsd.inolibi.entity.chart.dto.ChartByAIDto;
 import com.zzsd.inolibi.service.IChartService;
-import com.zzsd.inolibi.utils.ExcelUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
