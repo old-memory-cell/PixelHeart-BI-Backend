@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.zzsd.inolibi.entity.chart.Chart;
 import com.zzsd.inolibi.entity.chart.dto.ChartByAIDto;
 import com.zzsd.inolibi.mapper.ChartMapper;
+import com.zzsd.inolibi.service.IAIService;
 import com.zzsd.inolibi.service.IChartService;
 
 import com.zzsd.inolibi.utils.CurrentHolder;
@@ -25,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements IChartService {
 
     @Resource
-    private ChatClient chatClient;
+    private IAIService aiService;
 
 
     /**
@@ -36,7 +37,6 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
      */
     @Override
     public String getChartDataByAI(ChartByAIDto chartByAIDto, MultipartFile multipartFile) {
-        // TODO 进行ai调用。
         // 1. 读取文件内容
         String csvStr = ExcelUtils.excelToCsv(multipartFile);
         // 2. 调用ai接口
@@ -45,15 +45,15 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
         String chartType = chartByAIDto.getChartType();
         Long userId = CurrentHolder.getCurrentId();
         String conversationId = UUID.randomUUID() + "-" + userId;
-
-        String modelResponse = chatClient.prompt()
-                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
-                .user("目标：" + goal)
-                .user("图表名称" + chartName)
-                .user("图表类型" + chartType)
-                .user("文件数据" + csvStr)
-                .call()
-                .content();
+        // 构建问题
+        String question = """
+        分析目标:%s
+        图表类型:%s
+        图表名称:%s
+        文件数据:%s
+        """.formatted(chartType, chartName, goal, csvStr);
+        // 调用大模型
+        String modelResponse = aiService.getAIAnswer(question, conversationId);
         // 3. 保存文档内容到mysql
         Chart chart = new Chart();
         chart.setChartType(chartType);
