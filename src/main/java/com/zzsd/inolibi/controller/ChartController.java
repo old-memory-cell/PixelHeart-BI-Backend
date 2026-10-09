@@ -2,18 +2,16 @@ package com.zzsd.inolibi.controller;
 
 
 import com.zzsd.inolibi.common.Result;
-import com.zzsd.inolibi.entity.chart.vo.ChartVo;
-import com.zzsd.inolibi.entity.page.PageResult;
 import com.zzsd.inolibi.entity.chart.dto.ChartByAIDto;
 import com.zzsd.inolibi.entity.chart.dto.QueryChartDto;
+import com.zzsd.inolibi.entity.chart.vo.ChartVo;
+import com.zzsd.inolibi.entity.page.PageResult;
 import com.zzsd.inolibi.service.IChartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 /**
  * 图表信息表 前端控制器
@@ -44,6 +42,12 @@ public class ChartController {
         return Result.success(result);
     }
 
+    /**
+     * 获取图表列表
+     *
+     * @param queryChartDto 查询图表dto
+     * @return 图表列表
+     */
     @PostMapping("/listCharts")
     @Operation(summary = "获取图表列表")
     public Result<PageResult<ChartVo>> listCharts(@RequestBody QueryChartDto queryChartDto) {
