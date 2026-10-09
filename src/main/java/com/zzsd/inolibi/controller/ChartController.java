@@ -2,17 +2,18 @@ package com.zzsd.inolibi.controller;
 
 
 import com.zzsd.inolibi.common.Result;
+import com.zzsd.inolibi.entity.chart.vo.ChartVo;
+import com.zzsd.inolibi.entity.page.PageResult;
 import com.zzsd.inolibi.entity.chart.dto.ChartByAIDto;
+import com.zzsd.inolibi.entity.chart.dto.QueryChartDto;
 import com.zzsd.inolibi.service.IChartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * 图表信息表 前端控制器
@@ -24,9 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/chart")
 @Tag(name = "图表信息管理", description = "图表信息管理")
 public class ChartController {
-
-    @Resource
-    private ChatClient chatClient;
 
     @Resource
     private IChartService chartService;
@@ -44,6 +42,13 @@ public class ChartController {
                                            @RequestParam("file") MultipartFile multipartFile) {
         String result = chartService.getChartDataByAI(chartByAIDto, multipartFile);
         return Result.success(result);
+    }
+
+    @PostMapping("/listCharts")
+    @Operation(summary = "获取图表列表")
+    public Result<PageResult<ChartVo>> listCharts(@RequestBody QueryChartDto queryChartDto) {
+        PageResult<ChartVo> chartVoList = chartService.listCharts(queryChartDto);
+        return Result.success(chartVoList);
     }
 
 }

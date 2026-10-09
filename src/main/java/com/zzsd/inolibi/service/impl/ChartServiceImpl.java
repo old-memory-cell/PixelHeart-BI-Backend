@@ -1,9 +1,17 @@
 package com.zzsd.inolibi.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.zzsd.inolibi.entity.chart.Chart;
 import com.zzsd.inolibi.entity.chart.dto.ChartByAIDto;
+import com.zzsd.inolibi.entity.chart.dto.QueryChartDto;
+import com.zzsd.inolibi.entity.chart.vo.ChartVo;
+import com.zzsd.inolibi.entity.page.PageResult;
 import com.zzsd.inolibi.mapper.ChartMapper;
 import com.zzsd.inolibi.service.IAIService;
 import com.zzsd.inolibi.service.IChartService;
@@ -12,8 +20,11 @@ import com.zzsd.inolibi.utils.CurrentHolder;
 import com.zzsd.inolibi.utils.ExcelUtils;
 import com.zzsd.inolibi.utils.LlmResponseParser;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * 图表信息表 服务实现类
@@ -21,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author inoli
  * @since 2026-10-05
  */
+@Slf4j
 @Service
 public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements IChartService {
 
@@ -33,7 +45,7 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
      *
      * @param chartByAIDto  生成图表dto
      * @param multipartFile 上传的文件
-     * @return ai分析结果
+     * @return 分析结果
      */
     @Override
     public String getChartDataByAI(ChartByAIDto chartByAIDto, MultipartFile multipartFile) {
@@ -70,5 +82,29 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
         this.save(chart);
         // 3. 返回结果
         return modelResponse;
+    }
+
+    /**
+     * 条件查询图表
+     *
+     * @param queryChartDto 查询图表信息dto
+     * @return PageResult<ChartVo> 分页列表
+     */
+    @Override
+    public PageResult<ChartVo> listCharts(QueryChartDto queryChartDto) {
+        // 1. 构建分页查询对象
+        Page<Chart> page = new Page<>(queryChartDto.getPageNum(), queryChartDto.getPageSize());
+
+        String chartName = queryChartDto.getChartName();
+        // 2. 构建查询条件
+        LambdaQueryWrapper<Chart> lambdaQueryWrapper = Wrappers.<Chart>lambdaQuery()
+                .eq(Chart::getUserId, CurrentHolder.getCurrentId())
+                .eq(ObjectUtil.isNotEmpty(chartName), Chart::getChartName, chartName);
+        // 3. 查询列表并返回
+        Page<Chart> chartPage = page(page, lambdaQueryWrapper);
+        return PageResult.<ChartVo>builder()
+                .total(chartPage.getTotal())
+                .records(BeanUtil.copyToList(chartPage.getRecords(), ChartVo.class))
+                .build();
     }
 }
