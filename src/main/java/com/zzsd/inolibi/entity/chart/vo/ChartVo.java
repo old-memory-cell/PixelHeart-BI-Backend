@@ -92,4 +92,11 @@ public class ChartVo implements Serializable {
     @Schema(description = "图表状态")
     @TableField("status")
     private ChartStatusEnum status;
+
+    /**
+     * 失败原因
+     */
+    @Schema(description = "失败原因")
+    @TableField(exist = false)
+    private String errorMsg;
 }

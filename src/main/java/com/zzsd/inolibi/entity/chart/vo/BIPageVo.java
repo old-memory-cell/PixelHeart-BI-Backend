@@ -78,4 +78,11 @@ public class BIPageVo implements Serializable {
     @TableField("status")
     private ChartStatusEnum status;
 
+    /**
+     * 失败原因
+     */
+    @Schema(description = "失败原因")
+    @TableField(exist = false)
+    private String errorMsg;
+
 }
