@@ -34,4 +34,13 @@ public interface IChartService extends IService<Chart> {
      * @return 图表信息
      */
     PageResult<ChartVo> listCharts(QueryChartDto queryChartDto);
+
+    /**
+     * 根据ai异步分析得到图表数据
+     *
+     * @param chartByAIDto  生成图表dto
+     * @param multipartFile 上传的文件
+     * @return ai分析结果
+     */
+    Chart getChartDataByAIAsync(ChartByAIDto chartByAIDto, MultipartFile multipartFile);
 }

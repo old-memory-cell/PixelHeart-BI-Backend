@@ -82,7 +82,7 @@ public class BIPageVo implements Serializable {
      * 失败原因
      */
     @Schema(description = "失败原因")
-    @TableField(exist = false)
+    @TableField("error_msg")
     private String errorMsg;
 
 }

@@ -44,6 +44,21 @@ public class ChartController {
     }
 
     /**
+     * 让ai异步分析得到图表结果
+     *
+     * @param chartByAIDto  生成图表dto
+     * @param multipartFile 上传的文件
+     * @return ai分析结果
+     */
+    @PostMapping("/getChartDataByAIAsync")
+    @Operation(summary = "根据AI异步获取图表数据")
+    public Result<Chart> getChartDataByAIAsync(ChartByAIDto chartByAIDto,
+                                               @RequestParam("file") MultipartFile multipartFile) {
+        Chart result = chartService.getChartDataByAIAsync(chartByAIDto, multipartFile);
+        return Result.success(result);
+    }
+
+    /**
      * 获取图表列表
      *
      * @param queryChartDto 查询图表dto

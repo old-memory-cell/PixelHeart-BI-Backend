@@ -29,7 +29,7 @@ import java.time.LocalDateTime;
 @Builder
 @JsonPropertyOrder({
         "id", "chartType", "goal", "chartData",
-        "genChart", "genResult", "userId", "status",
+        "genChart", "genResult", "userId", "status","errorMsg",
         "createTime", "updateTime", "isDelete"
 })
 public class Chart implements Serializable {
@@ -97,7 +97,7 @@ public class Chart implements Serializable {
      * 失败原因
      */
     @Schema(description = "失败原因")
-    @TableField(exist = false)
+    @TableField("error_msg")
     private String errorMsg;
 
     /**
