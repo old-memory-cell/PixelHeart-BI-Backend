@@ -23,4 +23,10 @@ public class QueryChartDto extends PageQueryDto implements Serializable {
      */
     @Schema(description = "图表名称")
     private String chartName;
+
+    /**
+     * 图表名称
+     */
+    @Schema(description = "图表类型")
+    private String chartType;
 }

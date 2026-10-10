@@ -104,7 +104,8 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
         // 2. 构建查询条件
         LambdaQueryWrapper<Chart> lambdaQueryWrapper = Wrappers.<Chart>lambdaQuery()
                 .eq(Chart::getUserId, CurrentHolder.getCurrentId())
-                .eq(ObjectUtil.isNotEmpty(chartName), Chart::getChartName, chartName);
+                .eq(ObjectUtil.isNotEmpty(chartName), Chart::getChartName, chartName)
+                .eq(ObjectUtil.isNotEmpty(queryChartDto.getChartType()), Chart::getChartType, queryChartDto.getChartType());
         // 3. 查询列表并返回
         Page<Chart> chartPage = page(page, lambdaQueryWrapper);
         return PageResult.<ChartVo>builder()
