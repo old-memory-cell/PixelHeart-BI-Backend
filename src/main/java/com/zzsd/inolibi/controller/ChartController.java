@@ -2,6 +2,7 @@ package com.zzsd.inolibi.controller;
 
 
 import com.zzsd.inolibi.common.Result;
+import com.zzsd.inolibi.entity.chart.Chart;
 import com.zzsd.inolibi.entity.chart.dto.ChartByAIDto;
 import com.zzsd.inolibi.entity.chart.dto.QueryChartDto;
 import com.zzsd.inolibi.entity.chart.vo.ChartVo;
@@ -36,9 +37,9 @@ public class ChartController {
      */
     @PostMapping("/getChartDataByAI")
     @Operation(summary = "根据AI获取图表数据")
-    public Result<String> getChartDataByAI(ChartByAIDto chartByAIDto,
-                                           @RequestParam("file") MultipartFile multipartFile) {
-        String result = chartService.getChartDataByAI(chartByAIDto, multipartFile);
+    public Result<Chart> getChartDataByAI(ChartByAIDto chartByAIDto,
+                                          @RequestParam("file") MultipartFile multipartFile) {
+        Chart result = chartService.getChartDataByAI(chartByAIDto, multipartFile);
         return Result.success(result);
     }
 

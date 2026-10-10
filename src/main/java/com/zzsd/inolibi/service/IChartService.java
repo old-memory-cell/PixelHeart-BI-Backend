@@ -25,7 +25,7 @@ public interface IChartService extends IService<Chart> {
      * @param multipartFile 上传的文件
      * @return ai分析结果
      */
-    String getChartDataByAI(ChartByAIDto chartByAIDto, MultipartFile multipartFile);
+    Chart getChartDataByAI(ChartByAIDto chartByAIDto, MultipartFile multipartFile);
 
     /**
      * 查询图表信息

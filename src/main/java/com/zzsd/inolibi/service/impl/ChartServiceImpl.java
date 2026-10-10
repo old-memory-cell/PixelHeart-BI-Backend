@@ -46,7 +46,7 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
      * @return 分析结果
      */
     @Override
-    public String getChartDataByAI(ChartByAIDto chartByAIDto, MultipartFile multipartFile) {
+    public Chart getChartDataByAI(ChartByAIDto chartByAIDto, MultipartFile multipartFile) {
         // 1. 读取文件内容
         String csvStr = ExcelUtils.excelToCsv(multipartFile);
         // 2. 调用ai接口
@@ -79,7 +79,7 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
                 .userId(userId).build();
         this.save(chart);
         // 3. 返回结果
-        return modelResponse;
+        return chart;
     }
 
     /**
