@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.zzsd.inolibi.entity.enums.ChartStatusEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
@@ -84,4 +85,11 @@ public class ChartVo implements Serializable {
     @Schema(description = "创建用户 id")
     @TableField("user_id")
     private Long userId;
+
+    /**
+     * 图表状态
+     */
+    @Schema(description = "图表状态")
+    @TableField("status")
+    private ChartStatusEnum status;
 }

@@ -2,6 +2,7 @@ package com.zzsd.inolibi.entity.chart.vo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.zzsd.inolibi.entity.enums.ChartStatusEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
@@ -69,5 +70,12 @@ public class BIPageVo implements Serializable {
     @Schema(description = "生成的分析结论")
     @TableField("gen_result")
     private String genResult;
+
+    /**
+     * 图表状态
+     */
+    @Schema(description = "图表状态")
+    @TableField("status")
+    private ChartStatusEnum status;
 
 }
