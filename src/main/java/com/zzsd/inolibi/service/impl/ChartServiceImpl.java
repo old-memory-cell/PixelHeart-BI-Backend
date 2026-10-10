@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
+import com.zzsd.inolibi.common.RedissonRateLimiter;
 import com.zzsd.inolibi.entity.chart.Chart;
 import com.zzsd.inolibi.entity.chart.dto.ChartByAIDto;
 import com.zzsd.inolibi.entity.chart.dto.QueryChartDto;
@@ -37,6 +38,9 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
     @Resource
     private IAIService aiService;
 
+    @Resource
+    private RedissonRateLimiter redissonRateLimiter;
+
 
     /**
      * 根据ai分析得到图表数据
@@ -47,13 +51,16 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
      */
     @Override
     public Chart getChartDataByAI(ChartByAIDto chartByAIDto, MultipartFile multipartFile) {
+        // 限流
+        Long userId = CurrentHolder.getCurrentId();
+        redissonRateLimiter.rateLimiter("getChartDataByAI_" + userId);
+
         // 1. 读取文件内容
         String csvStr = ExcelUtils.excelToCsv(multipartFile);
         // 2. 调用ai接口
         String goal = chartByAIDto.getGoal();
         String chartName = chartByAIDto.getChartName();
         String chartType = chartByAIDto.getChartType();
-        Long userId = CurrentHolder.getCurrentId();
         String conversationId = UUID.randomUUID() + "-" + userId;
         // 构建问题
         String question = """
