@@ -59,7 +59,4 @@ public class ExcelUtils {
         return stringBuilder.toString();
     }
 
-    public static void main(String[] args) {
-        excelToCsv(null);
-    }
 }

@@ -4,11 +4,11 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.zzsd.inolibi.common.RedissonRateLimiter;
+import com.zzsd.inolibi.constants.RabbitMQConstant;
 import com.zzsd.inolibi.entity.chart.Chart;
 import com.zzsd.inolibi.entity.chart.dto.ChartByAIDto;
 import com.zzsd.inolibi.entity.chart.dto.QueryChartDto;
@@ -24,11 +24,9 @@ import com.zzsd.inolibi.utils.ExcelUtils;
 import com.zzsd.inolibi.utils.LlmResponseParser;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 图表信息表 服务实现类
@@ -47,7 +45,7 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
     private RedissonRateLimiter redissonRateLimiter;
 
     @Resource
-    private ThreadPoolExecutor threadPoolExecutor;
+    private RabbitTemplate rabbitTemplate;
 
 
     /**
@@ -153,79 +151,25 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
 
         // 将实例保存到数据库当中进行返回
         save(chart);
-
-        // 2. 异步调用ai接口
         Long chartId = chart.getId();
-        String conversationId = UUID.randomUUID() + "-" + userId;
 
-        // 使用线程池进行调用ai分析
-        CompletableFuture
-                .runAsync(
-                        () -> doAsyncAnalysis(chartId, chartByAIDto, csvStr, conversationId, userId),
-                        threadPoolExecutor)
-                // 出现异常需要处理
-                .exceptionally(ex -> {
-                    log.error("提交异步分析任务失败, chartId={}", chartId, ex);
-                    // 兜底：把状态改为失败
-                    update(Wrappers.<Chart>lambdaUpdate()
-                            .eq(Chart::getId, chartId)
-                            .set(Chart::getStatus, ChartStatusEnum.FAILED)
-                            .set(Chart::getErrorMsg, "任务提交失败: " + ex.getMessage()));
-                    return null;
-                });;
+        // 将消息发送到消息队列当中
+        try {
+            rabbitTemplate.convertAndSend(RabbitMQConstant.CHART_QUEUE, chartId);
+        } catch (Exception e) {
+            log.error("发送 MQ 失败, chartId={}", chartId, e);
+            // 兜底：标记失败，或记录到本地表稍后重发
+            try {
+                update(Wrappers.<Chart>lambdaUpdate()
+                        .eq(Chart::getId, chartId)
+                        .set(Chart::getStatus, ChartStatusEnum.FAILED)
+                        .set(Chart::getErrorMsg, "消息发送失败: " + e.getMessage()));
+            } catch (Exception ex) {
+                log.error("标记失败状态也失败了, chartId={}", chartId, ex);
+            }
+            throw new RuntimeException("提交分析任务失败，请重试");
+        }
 
         return chart;
-    }
-
-    /**
-     * 异步调用ai接口
-     *
-     * @param chartId 图表id
-     * @param dto dto
-     * @param csvStr 文件数据
-     * @param conversationId 会话id
-     * @param userId 用户id
-     */
-    public void doAsyncAnalysis(Long chartId, ChartByAIDto dto, String csvStr,
-                                String conversationId, Long userId) {
-        // 更新为 RUNNING（可选）
-        boolean updated = update(Wrappers.<Chart>lambdaUpdate()
-                .eq(Chart::getId, chartId)
-                .eq(Chart::getUserId , userId)
-                .set(Chart::getStatus, ChartStatusEnum.RUNNING));
-
-        if (!updated) {
-            log.error("更新状态失败, chartId={}", chartId);
-            return;
-        }
-
-        try {
-            String question = """
-                    分析目标:%s
-                    图表类型:%s
-                    图表名称:%s
-                    文件数据:%s
-                    """.formatted(dto.getChartType(), dto.getChartName(), dto.getGoal(), csvStr);
-
-            String modelResponse = aiService.getAIAnswer(question, conversationId);
-            AnalysisResult result = LlmResponseParser.parse(modelResponse);
-
-            // 更新结果
-            Chart update = Chart.builder()
-                    .id(chartId)
-                    .genChart(result.echartsCode())
-                    .genResult(result.conclusion())
-                    .status(ChartStatusEnum.SUCCESS)
-                    .build();
-            this.updateById(update);
-        } catch (Exception e) {
-            log.error("AI 分析失败, chartId={}", chartId, e);
-            Chart update = Chart.builder()
-                    .id(chartId)
-                    .status(ChartStatusEnum.FAILED)
-                    .errorMsg(e.getMessage())
-                    .build();
-            this.updateById(update);
-        }
     }
 }
