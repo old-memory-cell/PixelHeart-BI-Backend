@@ -31,6 +31,14 @@ spring:
       chat:
         model: deepseek-flash # 模型名称
 
+  # rabbit mq 配置
+  rabbitmq:
+    addresses: ${rabbitmq.host}
+    port: ${rabbitmq.port}
+    virtual-host: ${rabbitmq.virtual-host}
+    username: ${rabbitmq.username}
+    password: ${rabbitmq.password}
+
 # swagger
 springdoc:
   group-configs:
