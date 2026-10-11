@@ -42,6 +42,8 @@ spring:
       simple:
         acknowledge-mode: manual
         prefetch: 1
+    publisher-confirm-type: none # 发布确认
+    publisher-returns: false # 发布返回
 
 # swagger
 springdoc:
