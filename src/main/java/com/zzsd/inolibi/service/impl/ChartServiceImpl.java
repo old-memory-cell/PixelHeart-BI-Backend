@@ -1,6 +1,7 @@
 package com.zzsd.inolibi.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -60,6 +61,12 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
         // 限流
         Long userId = CurrentHolder.getCurrentId();
         redissonRateLimiter.rateLimiter("getChartDataByAI_" + userId);
+
+        // 判断文件是否合法
+        String suffix = FileUtil.getSuffix(multipartFile.getOriginalFilename());
+        if (!"xlsx".equals(suffix) || !"xls".equals(suffix)) {
+            throw new RuntimeException("文件格式不合法");
+        }
 
         // 1. 读取文件内容
         String csvStr = ExcelUtils.excelToCsv(multipartFile);
@@ -134,6 +141,12 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
         // 限流
         Long userId = CurrentHolder.getCurrentId();
         redissonRateLimiter.rateLimiter("getChartDataByAIAsync" + userId);
+
+        // 判断文件是否合法
+        String suffix = FileUtil.getSuffix(multipartFile.getOriginalFilename());
+        if (!"xlsx".equals(suffix) || !"xls".equals(suffix)) {
+            throw new RuntimeException("文件格式不合法");
+        }
 
         // 1. 读取文件内容
         String csvStr = ExcelUtils.excelToCsv(multipartFile);
