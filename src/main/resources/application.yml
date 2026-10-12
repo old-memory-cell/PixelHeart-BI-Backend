@@ -74,4 +74,11 @@ mybatis-plus:
 #配置事务管理日志级别
 logging:
   level:
-    org.springframework.jdbc.support.JdbcTransactionManager: debug
+    org.springframework.jdbc.support.JdbcTransactionManager: info
+
+#阿里云oss
+aliyun:
+  oss:
+    endpoint: ${aliyun.oss.endpoint}
+    bucketName: ${aliyun.oss.bucketName}
+    region: ${aliyun.oss.region}

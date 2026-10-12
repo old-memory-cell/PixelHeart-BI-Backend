@@ -151,7 +151,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
         // 拷贝属性，忽略密码、逻辑删除等敏感/无用字段
         CurrentUserVo currentUserVo = new CurrentUserVo();
-        BeanUtil.copyProperties(user, currentUserVo, "userPassword", "updateTime", "isDelete");
+        BeanUtil.copyProperties(user, currentUserVo);
         return currentUserVo;
     }
 
