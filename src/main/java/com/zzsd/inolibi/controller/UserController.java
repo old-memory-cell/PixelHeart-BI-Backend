@@ -101,9 +101,17 @@ public class UserController {
         return Result.success();
     }
 
+    /**
+     * 更新用户信息
+     *
+     * @param user 用户信息
+     * @return 更新结果
+     */
     @PostMapping("/update")
     public Result updateUser(@RequestBody CurrentUserVo user) {
         userService.updateUser(user);
         return Result.success();
     }
+
+
 }
