@@ -2,8 +2,10 @@ package com.zzsd.inolibi.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.crypto.digest.BCrypt;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.zzsd.inolibi.common.Result;
@@ -14,6 +16,7 @@ import com.zzsd.inolibi.entity.user.vo.CurrentUserVo;
 import com.zzsd.inolibi.entity.user.vo.LoginInfo;
 import com.zzsd.inolibi.mapper.UserMapper;
 import com.zzsd.inolibi.service.IUserService;
+import com.zzsd.inolibi.utils.CurrentHolder;
 import com.zzsd.inolibi.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -157,6 +161,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     /**
      * 用户退出登录状态
+     *
      * @param request 请求
      */
     @Override
@@ -177,6 +182,61 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 stringRedisTemplate.opsForValue().set("jwt:blacklist:" + token, "logout", ttl, TimeUnit.MILLISECONDS);
             }
         }
+    }
+
+    /**
+     * 更新用户
+     *
+     * @param user 用户更新
+     */
+//    @Override
+//    public void updateUser(CurrentUserVo user) {
+//        Long currentId = CurrentHolder.getCurrentId();
+//        if (currentId == null) throw new RuntimeException("用户未登录");
+//        if (user.getId() != null && !currentId.equals(user.getId())) throw new RuntimeException("只能修改本人信息");
+//
+//        User current = getById(currentId);
+//        LambdaUpdateWrapper<User> w = Wrappers.<User>lambdaUpdate()
+//                .eq(User::getId, currentId)
+//                .set(User::getUpdateTime, LocalDateTime.now())
+//                .set(user.getUserName() != null, User::getUserName, user.getUserName())
+//                .set(user.getUserAvatar() != null, User::getUserAvatar, user.getUserAvatar());
+//
+//        String target = user.getUserRole();
+//        if (target != null && !target.equals(current.getUserRole())) {
+//            if (!"admin".equals(current.getUserRole())) throw new RuntimeException("无权限修改用户角色");
+//            w.set(User::getUserRole, target);
+//        }
+//        if (!update(null, w)) throw new RuntimeException("用户信息未发生变化或更新失败");
+//    }
+
+    @Override
+    public void updateUser(CurrentUserVo user) {
+        Long currentId = CurrentHolder.getCurrentId();
+        if (currentId == null) throw new RuntimeException("用户未登录");
+
+        User userInDb = getById(currentId);
+        if (userInDb == null) throw new RuntimeException("用户不存在");
+
+        boolean isAdmin = "admin".equals(userInDb.getUserRole());
+        Long targetId = user.getId() == null ? currentId : user.getId();   // 默认本人
+        if (!isAdmin && !currentId.equals(targetId)) {
+            throw new RuntimeException("只能修改本人信息");   // 授权用异常，不用 WHERE
+        }
+
+        LambdaUpdateWrapper<User> w = Wrappers.<User>lambdaUpdate()
+                .eq(User::getId, targetId)                                  // ← WHERE 永远存在
+                .set(ObjectUtil.isNotEmpty(user.getUserName()), User::getUserName, user.getUserName())
+                .set(ObjectUtil.isNotEmpty(user.getUserAvatar()), User::getUserAvatar, user.getUserAvatar())
+                .set(User::getUpdateTime, LocalDateTime.now());
+
+        if (isAdmin && ObjectUtil.isNotEmpty(user.getUserRole())) {          // ← 值也要判空
+            if (!"user".equals(user.getUserRole()) && !"admin".equals(user.getUserRole())) {
+                throw new RuntimeException("角色不合法");
+            }
+            w.set(User::getUserRole, user.getUserRole());
+        }
+        if (!update(null, w)) throw new RuntimeException("更新失败");
     }
 
 }

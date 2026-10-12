@@ -24,10 +24,13 @@ import com.zzsd.inolibi.utils.CurrentHolder;
 import com.zzsd.inolibi.utils.ExcelUtils;
 import com.zzsd.inolibi.utils.LlmResponseParser;
 import jakarta.annotation.Resource;
+import jodd.util.ArraysUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Arrays;
 
 /**
  * 图表信息表 服务实现类
@@ -144,7 +147,7 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
 
         // 判断文件是否合法
         String suffix = FileUtil.getSuffix(multipartFile.getOriginalFilename());
-        if (!"xlsx".equals(suffix) || !"xls".equals(suffix)) {
+        if (!ObjectUtil.contains(Arrays.asList("xlsx", "xls"), suffix)) {
             throw new RuntimeException("文件格式不合法");
         }
 

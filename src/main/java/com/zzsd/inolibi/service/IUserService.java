@@ -47,4 +47,11 @@ public interface IUserService extends IService<User> {
      * @param request 请求
      */
     void logout(HttpServletRequest request) throws Exception;
+
+    /**
+     * 更新用户信息
+     *
+     * @param user 用户更新
+     */
+    void updateUser(CurrentUserVo user);
 }

@@ -90,6 +90,7 @@ public class UserController {
 
     /**
      * 用户退出登录状态
+     *
      * @return 退出登录
      */
     @PostMapping("/logout")
@@ -100,5 +101,9 @@ public class UserController {
         return Result.success();
     }
 
-
+    @PostMapping("/update")
+    public Result updateUser(@RequestBody CurrentUserVo user) {
+        userService.updateUser(user);
+        return Result.success();
+    }
 }
