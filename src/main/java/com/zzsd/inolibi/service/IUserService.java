@@ -2,11 +2,14 @@ package com.zzsd.inolibi.service;
 
 import com.baomidou.mybatisplus.spring.service.IService;
 import com.zzsd.inolibi.common.Result;
+import com.zzsd.inolibi.entity.page.PageResult;
 import com.zzsd.inolibi.entity.user.User;
 import com.zzsd.inolibi.entity.user.dto.UserLoginDto;
+import com.zzsd.inolibi.entity.user.dto.UserQueryDto;
 import com.zzsd.inolibi.entity.user.dto.UserRegisterDto;
 import com.zzsd.inolibi.entity.user.vo.CurrentUserVo;
 import com.zzsd.inolibi.entity.user.vo.LoginInfo;
+import com.zzsd.inolibi.entity.user.vo.UserQueryVo;
 import jakarta.servlet.http.HttpServletRequest;
 
 
@@ -54,4 +57,12 @@ public interface IUserService extends IService<User> {
      * @param user 用户更新
      */
     void updateUser(CurrentUserVo user);
+
+    /**
+     * 查询用户列表
+     *
+     * @param userQueryDto 查询条件
+     * @return 用户列表
+     */
+    PageResult<UserQueryVo> queryList(UserQueryDto userQueryDto);
 }

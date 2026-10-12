@@ -2,11 +2,14 @@ package com.zzsd.inolibi.controller;
 
 
 import com.zzsd.inolibi.common.Result;
+import com.zzsd.inolibi.entity.page.PageResult;
 import com.zzsd.inolibi.entity.user.User;
 import com.zzsd.inolibi.entity.user.dto.UserLoginDto;
+import com.zzsd.inolibi.entity.user.dto.UserQueryDto;
 import com.zzsd.inolibi.entity.user.dto.UserRegisterDto;
 import com.zzsd.inolibi.entity.user.vo.CurrentUserVo;
 import com.zzsd.inolibi.entity.user.vo.LoginInfo;
+import com.zzsd.inolibi.entity.user.vo.UserQueryVo;
 import com.zzsd.inolibi.service.IUserService;
 import com.zzsd.inolibi.utils.CurrentHolder;
 import io.swagger.v3.oas.annotations.Operation;
@@ -111,6 +114,18 @@ public class UserController {
     public Result updateUser(@RequestBody CurrentUserVo user) {
         userService.updateUser(user);
         return Result.success();
+    }
+
+    /**
+     * 查询用户列表 仅限管理员
+     *
+     * @return 用户列表
+     */
+    @PostMapping("/queryList")
+    @Operation(summary = "仅限管理员查询用户列表")
+    public Result<PageResult<UserQueryVo>> queryList(@RequestBody UserQueryDto userQueryDto) {
+        PageResult<UserQueryVo> result = userService.queryList(userQueryDto);
+        return Result.success(result);
     }
 
 

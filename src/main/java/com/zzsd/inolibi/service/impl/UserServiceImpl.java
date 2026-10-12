@@ -5,15 +5,20 @@ import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.crypto.digest.BCrypt;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import com.zzsd.inolibi.common.Result;
+import com.zzsd.inolibi.entity.page.PageResult;
 import com.zzsd.inolibi.entity.user.User;
 import com.zzsd.inolibi.entity.user.dto.UserLoginDto;
+import com.zzsd.inolibi.entity.user.dto.UserQueryDto;
 import com.zzsd.inolibi.entity.user.dto.UserRegisterDto;
 import com.zzsd.inolibi.entity.user.vo.CurrentUserVo;
 import com.zzsd.inolibi.entity.user.vo.LoginInfo;
+import com.zzsd.inolibi.entity.user.vo.UserQueryVo;
 import com.zzsd.inolibi.mapper.UserMapper;
 import com.zzsd.inolibi.service.IUserService;
 import com.zzsd.inolibi.utils.CurrentHolder;
@@ -21,6 +26,7 @@ import com.zzsd.inolibi.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +42,7 @@ import java.util.concurrent.TimeUnit;
  * @author inoli
  * @since 2026-10-05
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
@@ -209,7 +216,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 //        }
 //        if (!update(null, w)) throw new RuntimeException("用户信息未发生变化或更新失败");
 //    }
-
     @Override
     public void updateUser(CurrentUserVo user) {
         Long currentId = CurrentHolder.getCurrentId();
@@ -237,6 +243,40 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             w.set(User::getUserRole, user.getUserRole());
         }
         if (!update(null, w)) throw new RuntimeException("更新失败");
+    }
+
+    /**
+     * 查询用户的方法
+     *
+     * @param userQueryDto 查询条件
+     * @return 分页结果
+     */
+    @Override
+    public PageResult<UserQueryVo> queryList(UserQueryDto userQueryDto) {
+        // 判断是否是管理员
+        Long currentId = CurrentHolder.getCurrentId();
+        User currentUser = getById(currentId);
+        boolean isAdmin = "admin".equals(currentUser.getUserRole());
+        if (!isAdmin) {
+            // 不是管理员直接抛异常
+            throw new RuntimeException("无权限查询用户");
+        }
+
+        // 构建查询条件
+        Page<User> page = new Page<>(userQueryDto.getPageNum(), userQueryDto.getPageSize());
+        LambdaQueryWrapper<User> queryWrapper = Wrappers.<User>lambdaQuery()
+                .like(ObjectUtil.isNotEmpty(userQueryDto.getUserName()), User::getUserName, userQueryDto.getUserName())
+                .eq(ObjectUtil.isNotEmpty(userQueryDto.getUserRole()), User::getUserRole, userQueryDto.getUserRole())
+                .eq(ObjectUtil.isNotEmpty(userQueryDto.getUserAccount()),User::getUserAccount , userQueryDto.getUserAccount())
+                .orderByDesc(User::getCreateTime);
+        // 查询结果
+        Page<User> userPage = page(page, queryWrapper);
+        log.info("查询到对象：{}", userPage);
+        return new PageResult<>(userPage.getTotal(),
+                userPage.getRecords().stream()
+                        .map(user -> BeanUtil.copyProperties(user, UserQueryVo.class))
+                        .toList()
+        );
     }
 
 }
