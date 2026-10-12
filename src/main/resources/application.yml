@@ -42,6 +42,13 @@ spring:
       simple:
         acknowledge-mode: auto # 消息确认模式
         prefetch: 1
+        retry:
+          enabled: true # 开启重试机制
+          max-retries: 3 # 最大重试次数
+          initial-interval: 1000ms # 重试间隔
+          multiplier: 2 # 重试间隔乘数
+          max-interval: 1000ms # 最大重试间隔
+
     publisher-confirm-type: none # 发布确认
     publisher-returns: false # 发布返回
 
