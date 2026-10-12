@@ -67,7 +67,7 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
 
         // 判断文件是否合法
         String suffix = FileUtil.getSuffix(multipartFile.getOriginalFilename());
-        if (!"xlsx".equals(suffix) || !"xls".equals(suffix)) {
+        if (!ObjectUtil.contains(Arrays.asList("xlsx", "xls"), suffix)) {
             throw new RuntimeException("文件格式不合法");
         }
 
