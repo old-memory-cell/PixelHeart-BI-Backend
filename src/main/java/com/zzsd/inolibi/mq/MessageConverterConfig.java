@@ -17,7 +17,10 @@ public class MessageConverterConfig {
      */
     @Bean
     public MessageConverter messageConverter(){
-        return new JacksonJsonMessageConverter();
+        JacksonJsonMessageConverter jjmc = new JacksonJsonMessageConverter();
+        // 携带唯一消息id，确保消息幂等
+        jjmc.setCreateMessageIds(true);
+        return jjmc;
     }
 
 }

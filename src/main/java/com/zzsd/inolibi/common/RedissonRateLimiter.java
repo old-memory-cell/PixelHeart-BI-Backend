@@ -20,7 +20,7 @@ public class RedissonRateLimiter {
      * 限流方法
      */
     public void rateLimiter(String key) {
-// 1. 根据 key 获取（或创建）限流器对象
+        // 1. 根据 key 获取（或创建）限流器对象
         RRateLimiter rateLimiter = redissonClient.getRateLimiter(key);
 
         // 2. 初始化限流规则（仅在首次创建时生效）
