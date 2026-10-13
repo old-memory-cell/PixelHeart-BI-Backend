@@ -1,6 +1,7 @@
 package com.zzsd.inolibi.controller;
 
 
+import cn.hutool.core.bean.BeanUtil;
 import com.zzsd.inolibi.common.Result;
 import com.zzsd.inolibi.entity.page.PageResult;
 import com.zzsd.inolibi.entity.user.User;
@@ -128,5 +129,52 @@ public class UserController {
         return Result.success(result);
     }
 
+    /**
+     * 根据用户id查询用户信息，仅管理员可查询
+     *
+     * @param id 要查询的用户id
+     * @return 用户信息
+     */
+    @GetMapping("/queryUserById/{id}")
+    @Operation(summary = "根据用户id查询用户信息，仅管理员可查询")
+    public Result<UserQueryVo> queryUserById(@PathVariable Long id) {
+        // 1. 鉴权
+        Long currentId = CurrentHolder.getCurrentId();
+        User currentUser = userService.getById(currentId);
+        if (currentUser == null || !"admin".equals(currentUser.getUserRole())) {
+            return Result.error("无权限");
+        }
+
+        // 2. 查询用户信息
+        User user = userService.getById(id);
+        if (user == null) {
+            return Result.error("用户不存在");
+        }
+        UserQueryVo userQueryVo = BeanUtil.copyProperties(user, UserQueryVo.class);
+        return Result.success(userQueryVo);
+    }
+
+    /**
+     * 删除用户，仅管理员
+     * @param id 要删除的用户id
+     * @return Result
+     */
+    @PostMapping("/deleteById/{id}")
+    @Operation(summary = "删除用户,仅管理员")
+    public Result deleteById(@PathVariable Long id) {
+        // 1. 鉴权
+        Long currentId = CurrentHolder.getCurrentId();
+        User currentUser = userService.getById(currentId);
+        if (currentUser == null || !"admin".equals(currentUser.getUserRole())) {
+            return Result.error("无权限");
+        }
+
+        // 2. 删除用户
+        boolean b = userService.removeById(id);
+        if (b) {
+            return Result.success();
+        }
+        return Result.error("删除失败");
+    }
 
 }
