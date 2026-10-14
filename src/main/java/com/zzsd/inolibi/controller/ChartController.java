@@ -71,4 +71,36 @@ public class ChartController {
         return Result.success(chartVoList);
     }
 
+    /**
+     * 根据id获取图表信息
+     *
+     * @param id 图表id
+     * @return 返回图表信息
+     */
+    @GetMapping("/getChartById/{id}")
+    @Operation(summary = "根据id获取图表信息")
+    public Result<Chart> getChartById(@PathVariable Long id) {
+        Chart chart = chartService.getById(id);
+        if (chart == null) {
+            return Result.error("图表不存在");
+        }
+        return Result.success(chart);
+    }
+
+    /**
+     * 根据id删除图表信息
+     *
+     * @param id 要删除的图表id
+     * @return 删除结果
+     */
+    @PostMapping("/deleteChartById/{id}")
+    @Operation(summary = "根据id删除图表信息")
+    public Result deleteChartById(@PathVariable Long id) {
+        boolean b = chartService.removeById(id);
+        if (!b) {
+            return Result.error("删除失败");
+        }
+        return Result.success("删除成功");
+    }
+
 }
