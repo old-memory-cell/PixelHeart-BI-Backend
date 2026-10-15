@@ -7,8 +7,8 @@ public class CurrentHolder {
 
     private static final ThreadLocal<Long> CURRENT_LOCAL = new ThreadLocal<>();
 
-    public static void setCurrentId(Long employeeId) {
-        CURRENT_LOCAL.set(employeeId);
+    public static void setCurrentId(Long userId) {
+        CURRENT_LOCAL.set(userId);
     }
 
     public static Long getCurrentId() {

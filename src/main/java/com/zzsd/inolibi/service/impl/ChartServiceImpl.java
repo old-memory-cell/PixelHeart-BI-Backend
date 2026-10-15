@@ -83,7 +83,7 @@ public class ChartServiceImpl extends ServiceImpl<ChartMapper, Chart> implements
                 图表类型:%s
                 图表名称:%s
                 文件数据:%s
-                """.formatted(chartType, chartName, goal, csvStr);
+                """.formatted(goal, chartType, chartName, csvStr);
         // 调用大模型
         String modelResponse = aiService.getAIAnswer(question, conversationId);
 

@@ -23,16 +23,9 @@ public class ThreadPoolExecutorConfig {
     @Bean
     public ThreadPoolExecutor threadPoolExecutor() {
         // 手动创建线程工厂
-        ThreadFactory threadFactory = new ThreadFactory() {
-            private int count = 1;
-
-            @Override
-            public Thread newThread(@NonNull Runnable r) {
-                Thread thread = new Thread(r);
-                thread.setName("线程" + count);
-                count++;
-                return thread;
-            }
+        ThreadFactory threadFactory = r -> {
+            Thread thread = new Thread(r);
+            return thread;
         };
         // 返回线程池
         return new ThreadPoolExecutor(

@@ -35,17 +35,6 @@ public class UserController {
     @Resource
     private IUserService userService;
 
-    /**
-     * 获取用户列表
-     *
-     * @return 用户列表
-     */
-    @GetMapping("/list")
-    @Operation(summary = "用户列表")
-    public Result<List<User>> list() {
-        List<User> list = userService.list();
-        return Result.success(list);
-    }
 
 
     /**

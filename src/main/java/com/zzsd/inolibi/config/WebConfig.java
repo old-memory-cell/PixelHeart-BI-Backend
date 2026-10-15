@@ -23,11 +23,9 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns(
                         "/user/login", // 排除登录接口
                         "/user/register", // 排除注册接口
-                        "/health", // 排除健康检查接口
                         "/doc.html",
                         "/webjars/**",
-                        "/v3/api-docs/**",
-                        "/swagger-resources/**");
+                        "/v3/api-docs/**");
 
     }
 

@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
  * 全局异常处理器
- * <p>
  * 业务代码中直接抛出 RuntimeException 时，统一转换为 Result 结构返回，
  * 避免前端只拿到无响应体的 500、无法展示具体失败原因。
  *
