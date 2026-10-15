@@ -1,4 +1,5 @@
 # PixelHeart-BI 智能数据分析平台
+> 前端gitee: https://gitee.com/old-memory-cell/my-bi-fronted.git
 
 > 基于 Spring Boot 4 + Spring AI + DeepSeek 的智能 BI 数据分析与图表生成后端服务。用户上传 Excel 数据表并描述分析目标，服务调用大模型生成分析结论与 ECharts 图表代码，并落库管理。
 
